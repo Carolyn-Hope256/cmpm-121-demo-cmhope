@@ -15,6 +15,7 @@ let matter: number = 0;
 
 interface Item {
   name: string;
+  description: string;
   cost: number;
   rate: number;
   amount: number;
@@ -28,9 +29,11 @@ function buy(i: Item) {
 }
 
 const availableItems: Item[] = [
-  { name: "🤖Create Harvester Node⚒️", cost: 10, rate: 0.1, amount: 0 },
-  { name: "🤖Create Refiner Node⚗️", cost: 100, rate: 2, amount: 0 },
-  { name: "🤖Create Logistics Node🫀", cost: 1000, rate: 50, amount: 0 },
+  { name: "🤖Create Harvester Node⚒️", description: "Create a harvester node to gather more matter.", cost: 10, rate: 0.1, amount: 0 },
+  { name: "🤖Create Refiner Node⚗️", description: "Create a refiner node make more efficient use of matter.", cost: 100, rate: 2, amount: 0 },
+  { name: "🤖Create Generator Node⚡", description: "Create a generator node to power the swarm.", cost: 1000, rate: 50, amount: 0 },
+  { name: "🤖Create Logistics Node🫀", description: "Create a logistics node to organize the swarm.", cost: 10000, rate: 1500, amount: 0 },
+  { name: "🤖Create Brain Node🧠", description: "Create a brain node to drive the swarm.", cost: 100000, rate: 50000, amount: 0 },
 ];
 
 const buttons: HTMLButtonElement[] = [];
@@ -77,6 +80,7 @@ for (let i = 0; i < availableItems.length; i++) {
   buttons[i].onclick = function () {
     matter -= buy(availableItems[i]);
   };
+  buttons[i].title = availableItems[i].description;
   app.append(buttons[i]);
 }
 
