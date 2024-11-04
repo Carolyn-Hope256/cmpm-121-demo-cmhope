@@ -9,9 +9,11 @@ const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 
-//const UPS = 20; //Updates per second
-let TS: number = 0; //Timestamp
+let timeStamp: number = 0; 
 let matter: number = 0;
+
+const costRate = 1.15; //rate at which the cost of each item increases
+
 
 interface Item {
   name: string;
@@ -21,9 +23,10 @@ interface Item {
   amount: number;
 }
 
+//Increases the amount of the purchased item by 1, increase cost by 15%, and return the purchase cost
 function buy(i: Item) {
   const cost = i.cost;
-  i.cost *= 1.15;
+  i.cost *= costRate;
   i.amount += 1;
   return cost;
 }
@@ -68,64 +71,60 @@ const availableItems: Item[] = [
 
 const buttons: HTMLButtonElement[] = [];
 
-/*let hNodes: number = 0;
-let hPrice: number = 10;
-let rNodes: number = 0;
-let rPrice: number = 100;
-let lNodes: number = 0;
-let lPrice: number = 1000;*/
-//let bNodes: number = 0;
 
+//Create main clicker button and status text elements
 const gatherButton = document.createElement("button");
 console.log(typeof gatherButton);
 gatherButton.innerHTML = "⛏️Gather Materials⚙️";
 gatherButton.onclick = function () {
   matter++;
-  console.log(matter);
 };
 app.append(gatherButton);
 
 const statusText1 = document.createElement("div");
-statusText1.innerHTML =
-  "You are a self-replicating nanite.\nYou have " +
-  Math.floor(matter * 10) / 10 +
-  " units of machine-relevant matter.";
 app.append(statusText1);
 
 const statusText2 = document.createElement("div");
-statusText2.innerHTML =
-  "You have " +
-  0 +
-  " other nodes in your swarm. " +
-  " Your swarm is generating " +
-  0 +
-  " matter per second.";
 app.append(statusText2);
-//setInterval(updateMat, 1000 / UPS);
 
+
+//Create a buy button for each purchaseable item
 for (let i = 0; i < availableItems.length; i++) {
   buttons[i] = document.createElement("button");
-  buttons[i].innerHTML =
-    availableItems[i].name + ": " + round(availableItems[i].cost);
   buttons[i].onclick = function () {
     matter -= buy(availableItems[i]);
+    buttonUpdate(i);
   };
+  buttonUpdate(i);
   buttons[i].title = availableItems[i].description;
   app.append(buttons[i]);
 }
 
+
 requestAnimationFrame(updateMat);
 
+//Draw loop
 function updateMat() {
-  const nTS = performance.now(); //new timestamp
+  const newTimeStamp = performance.now(); 
   let rate = 0;
   let nodes = 0;
+
   for (let i = 0; i < availableItems.length; i++) {
     rate += availableItems[i].rate * availableItems[i].amount;
     nodes += availableItems[i].amount;
   }
-  matter += rate * ((nTS - TS) / 1000);
 
+  matter += rate * ((newTimeStamp - timeStamp) / 1000);
+
+  statusUpdate(rate, nodes);
+
+  timeStamp = newTimeStamp;
+  requestAnimationFrame(updateMat);
+}
+
+
+//Updates the status text with current values, checks if upgrades are affordable
+function statusUpdate(rate: number, nodes: number){
   statusText1.innerHTML =
     "You are a self-replicating nanite.\nYou have " +
     round(matter) +
@@ -140,14 +139,22 @@ function updateMat() {
     " matter per second.";
 
   for (let i = 0; i < availableItems.length; i++) {
-    buttons[i].innerHTML =
-      "(" + availableItems[i].amount + ") " + availableItems[i].name + ": " + round(availableItems[i].cost) + " matter.";
     buttons[i].disabled = matter < availableItems[i].cost;
   }
-
-  TS = nTS;
-  requestAnimationFrame(updateMat);
 }
+
+//Updates button name with current cost
+function buttonUpdate(index: number){ 
+  buttons[index].innerHTML =
+  "(" +
+  availableItems[index].amount +
+  ") " +
+  availableItems[index].name +
+  ": " +
+  round(availableItems[index].cost) +
+  " Matter";
+}
+
 
 function round(n: number) {
   return Math.floor(n * 10) / 10;
