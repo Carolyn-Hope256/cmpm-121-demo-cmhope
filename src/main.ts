@@ -2,18 +2,17 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Grey Goo";
+const gameName: string = "Grey Goo";
 document.title = gameName;
 
 const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 
-let timeStamp: number = 0; 
+let timeStamp: number = 0;
 let matter: number = 0;
 
 const costRate = 1.15; //rate at which the cost of each item increases
-
 
 interface Item {
   name: string;
@@ -25,7 +24,7 @@ interface Item {
 
 //Increases the amount of the purchased item by 1, increase cost by 15%, and return the purchase cost
 function buy(i: Item) {
-  const cost = i.cost;
+  const cost: number = i.cost;
   i.cost *= costRate;
   i.amount += 1;
   return cost;
@@ -71,9 +70,8 @@ const availableItems: Item[] = [
 
 const buttons: HTMLButtonElement[] = [];
 
-
 //Create main clicker button and status text elements
-const gatherButton = document.createElement("button");
+const gatherButton: HTMLButtonElement = document.createElement("button");
 console.log(typeof gatherButton);
 gatherButton.innerHTML = "⛏️Gather Materials⚙️";
 gatherButton.onclick = function () {
@@ -81,15 +79,14 @@ gatherButton.onclick = function () {
 };
 app.append(gatherButton);
 
-const statusText1 = document.createElement("div");
+const statusText1: HTMLDivElement = document.createElement("div");
 app.append(statusText1);
 
-const statusText2 = document.createElement("div");
+const statusText2: HTMLDivElement = document.createElement("div");
 app.append(statusText2);
 
-
 //Create a buy button for each purchaseable item
-for (let i = 0; i < availableItems.length; i++) {
+for (let i: number = 0; i < availableItems.length; i++) {
   buttons[i] = document.createElement("button");
   buttons[i].onclick = function () {
     matter -= buy(availableItems[i]);
@@ -100,16 +97,15 @@ for (let i = 0; i < availableItems.length; i++) {
   app.append(buttons[i]);
 }
 
-
 requestAnimationFrame(updateMat);
 
 //Draw loop
 function updateMat() {
-  const newTimeStamp = performance.now(); 
-  let rate = 0;
-  let nodes = 0;
+  const newTimeStamp: number = performance.now();
+  let rate: number = 0;
+  let nodes: number = 0;
 
-  for (let i = 0; i < availableItems.length; i++) {
+  for (let i: number = 0; i < availableItems.length; i++) {
     rate += availableItems[i].rate * availableItems[i].amount;
     nodes += availableItems[i].amount;
   }
@@ -122,9 +118,8 @@ function updateMat() {
   requestAnimationFrame(updateMat);
 }
 
-
 //Updates the status text with current values, checks if upgrades are affordable
-function statusUpdate(rate: number, nodes: number){
+function statusUpdate(rate: number, nodes: number) {
   statusText1.innerHTML =
     "You are a self-replicating nanite.\nYou have " +
     round(matter) +
@@ -138,23 +133,22 @@ function statusUpdate(rate: number, nodes: number){
     round(rate) +
     " matter per second.";
 
-  for (let i = 0; i < availableItems.length; i++) {
+  for (let i: number = 0; i < availableItems.length; i++) {
     buttons[i].disabled = matter < availableItems[i].cost;
   }
 }
 
 //Updates button name with current cost
-function buttonUpdate(index: number){ 
+function buttonUpdate(index: number) {
   buttons[index].innerHTML =
-  "(" +
-  availableItems[index].amount +
-  ") " +
-  availableItems[index].name +
-  ": " +
-  round(availableItems[index].cost) +
-  " Matter";
+    "(" +
+    availableItems[index].amount +
+    ") " +
+    availableItems[index].name +
+    ": " +
+    round(availableItems[index].cost) +
+    " Matter";
 }
-
 
 function round(n: number) {
   return Math.floor(n * 10) / 10;
